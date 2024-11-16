@@ -21,19 +21,19 @@ To apply the concepts learned, you will create a schema for a student, defining 
 ### Mongoose Vs Mongodb 
 #### MongoDB vs Mongoose Methods
 
-| **MongoDB**          | **Mongoose**                       |
-|-----------------------|------------------------------------|
-| `find()`             | `Model.find()`                    |
-| `findOne()`          | `Model.findOne()`                 |
-| `count()`            | -                                |
-| `update()`           | `Model.findByIdAndUpdate()`       |
-| `delete()`           | `Model.findByIdAndDelete()`       |
-| -                   | `Model.create()`                  |
-| -                   | `Model.findById()`                |
-| -                   | `Model.findOneAndDelete()`         |
-| -                   | `Model.replaceOne()`              |
-| -                   | `Model.updateMany()`              |
-| -                   | `Model.updateOne()`               |
+| **MongoDB** | **Mongoose**                |
+| ----------- | --------------------------- |
+| `find()`    | `Model.find()`              |
+| `findOne()` | `Model.findOne()`           |
+| `count()`   | -                           |
+| `update()`  | `Model.findByIdAndUpdate()` |
+| `delete()`  | `Model.findByIdAndDelete()` |
+| -           | `Model.create()`            |
+| -           | `Model.findById()`          |
+| -           | `Model.findOneAndDelete()`  |
+| -           | `Model.replaceOne()`        |
+| -           | `Model.updateMany()`        |
+| -           | `Model.updateOne()`         |
 
 #### Why we will use mongoose
 - Schema Definition
@@ -42,3 +42,79 @@ To apply the concepts learned, you will create a schema for a student, defining 
 - Querying
 - Middleware Support
 - Population
+  
+## 8-2 Installing express , mongoose, typescript, dotenv ,cors
+- npm init -y
+- npm install express
+- npm install mongoose --save
+- npm install typescript --save-dev
+- npm install cors
+- npm install dotenv --save
+- tsc -init
+- "outDir": "./dist",   "rootDir": "./src",    
+- npm i --save-dev @types/node
+-   "scripts": {
+    "build" : "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }, if we write npm run build it will create dist folder and tsc command work will be done
+- npm run build
+- node ./dist/app.js
+- we will keep all connections in server.ts
+- Install node typing library npm i -D @types/node
+- Install express typing library npm i -D @types/express
+- Create .env file in the root and 
+  ```js
+  PORT = 5000
+  DATABASE_URL=mongodb+srv://admin-um:admin12345@cluster0.cjbmdks
+  mongodb.net/first-project?retryWrites=true&w=majority
+  appName=Cluster0
+
+  <!-- here first-project is the database name it is added additionally  -->
+  ```
+-  In server.ts  
+```ts
+import app from "./app";
+
+const mongoose = require('mongoose');
+
+async function main() {
+    await mongoose.connect(process.env.DATABASE_URL);
+  
+  }
+
+
+app.listen(process.env.PORT, () => {
+    console.log(`Example app listening on port ${process.env.PORT}`)
+  })
+```
+- In app.ts
+```ts
+import express, {Request, Response} from 'express';
+
+const app = express()
+const port = 3000
+
+app.get('/', (req :Request, res:Response) => {
+  res.send('Hello World!')
+})
+
+export default app
+
+```
+- For Port Purpose we have to create a separate file so that we do not need to use process.env every time.
+![alt text](image.png)
+
+- Inside te config -> index.ts file 
+```ts
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Configure dotenv to load .env file
+dotenv.config({ path: path.join(process.cwd(), '.env') });
+
+// process.cwd() gets the current working directory (CWD) of the Node.js process. This typically points to the root directory of your project.
+// Combines the current working directory (process.cwd()) with the string '.env' to create the full path to the .env file.
+// dotenv.config is called with the { path } option to tell dotenv where to find the .env filedotenv.config is called with the { path } option to tell dotenv where to find the .env file
+```
+- This setup is useful in scenarios where sensitive configuration data (e.g., API keys, database credentials, or server configurations) is stored in a .env file to keep it out of the source code and version control.
+
