@@ -783,3 +783,217 @@ const result = await studentServices.createStudentIntoDB(studentData);
 
 }
 ```
+
+## 8-10 Create get student route
+
+### get all the student data
+
+- student.route.ts
+
+```ts
+import express from 'express';
+import { StudentController } from './student.controller';
+
+const router = express.Router();
+
+// This will take the router request from client and hit the controller
+router.post('/create-student', StudentController.createStudent);
+
+router.get('/', StudentController.getAllStudents);
+export const StudentRoutes = router;
+```
+
+- student.controller.ts
+
+```ts
+import { Request, Response } from 'express';
+import { studentServices } from './student.service';
+
+// fot creating a student
+const createStudent = async (req: Request, res: Response) => {
+  try {
+    // const student = req.body.student;
+    // or
+    const { student: studentData } = req.body;
+
+    // will call service function to send this data
+    const result = await studentServices.createStudentIntoDB(studentData);
+
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Student Is Created Successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// for getting all students
+const getAllStudents = async (req: Request, res: Response) => {
+  try {
+    const result = await studentServices.getAllStudentsFromDB();
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Students are retrieved successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const StudentController = {
+  createStudent,
+  getAllStudents,
+  getSingleStudent,
+};
+```
+
+- student.service.ts
+
+```ts
+import { Student } from './student.interface';
+import { StudentModel } from './student.model';
+
+const createStudentIntoDB = async (student: Student) => {
+  const result = await StudentModel.create(student);
+  return result;
+};
+
+// getting data service
+const getAllStudentsFromDB = async () => {
+  const result = await StudentModel.find();
+  return result;
+};
+
+export const studentServices = {
+  createStudentIntoDB,
+  getAllStudentsFromDB,
+};
+```
+
+- hit in postman http://localhost:5000/api/v1/students
+-
+
+### get single student data
+
+- student.route.ts
+
+```ts
+import express from 'express';
+import { StudentController } from './student.controller';
+
+const router = express.Router();
+
+// This will take the router request from client and hit the controller
+router.post('/create-student', StudentController.createStudent);
+
+// get all students
+router.get('/', StudentController.getAllStudents);
+
+// get single students
+router.get('/:studentId', StudentController.getSingleStudent);
+
+export const StudentRoutes = router;
+```
+
+- student.controller.ts
+
+```ts
+import { Request, Response } from 'express';
+import { studentServices } from './student.service';
+
+// fot creating a student
+const createStudent = async (req: Request, res: Response) => {
+  try {
+    // const student = req.body.student;
+    // or
+    const { student: studentData } = req.body;
+
+    // will call service function to send this data
+    const result = await studentServices.createStudentIntoDB(studentData);
+
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Student Is Created Successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// for getting all students
+const getAllStudents = async (req: Request, res: Response) => {
+  try {
+    const result = await studentServices.getAllStudentsFromDB();
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Students are retrieved successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// for getting single students
+const getSingleStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const result = await studentServices.getSingleStudentFromDB(studentId);
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Students is retrieved successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const StudentController = {
+  createStudent,
+  getAllStudents,
+  getSingleStudent,
+};
+```
+
+- student.service.ts
+
+```ts
+import { Student } from './student.interface';
+import { StudentModel } from './student.model';
+
+const createStudentIntoDB = async (student: Student) => {
+  const result = await StudentModel.create(student);
+  return result;
+};
+
+// getting all data service
+const getAllStudentsFromDB = async () => {
+  const result = await StudentModel.find();
+  return result;
+};
+
+// get single student from db
+const getSingleStudentFromDB = async (id: string) => {
+  const result = await StudentModel.findOne({ id });
+  return result;
+};
+
+export const studentServices = {
+  createStudentIntoDB,
+  getAllStudentsFromDB,
+  getSingleStudentFromDB,
+};
+```
+
+- hit in postman http://localhost:5000/api/v1/students/S12345
+- npm run lint to check error
+- npm run prettier for checking formatting

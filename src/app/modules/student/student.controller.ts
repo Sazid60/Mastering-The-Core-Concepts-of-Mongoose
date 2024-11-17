@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { studentServices } from './student.service';
 
+// fot creating a student
 const createStudent = async (req: Request, res: Response) => {
   try {
     // const student = req.body.student;
@@ -21,6 +22,38 @@ const createStudent = async (req: Request, res: Response) => {
   }
 };
 
+// for getting all students
+const getAllStudents = async (req: Request, res: Response) => {
+  try {
+    const result = await studentServices.getAllStudentsFromDB();
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Students are retrieved successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// for getting single students
+const getSingleStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const result = await studentServices.getSingleStudentFromDB(studentId);
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Students is retrieved successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 export const StudentController = {
   createStudent,
+  getAllStudents,
+  getSingleStudent,
 };
