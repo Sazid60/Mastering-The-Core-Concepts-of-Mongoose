@@ -1,14 +1,14 @@
-import dotenv from 'dotenv'
-import path from 'path'
+import dotenv from 'dotenv';
+import path from 'path';
 
 // connecting with .env
 // Configure dotenv to load .env file
-dotenv.config({ path: path.join((process.cwd(), '.env')) })
+dotenv.config({ path: path.join((process.cwd(), '.env')) });
 
 export default {
-    port: process.env.PORT,
-    database_url: process.env.DATABASE_URL
-}
+  port: process.env.PORT,
+  database_url: process.env.DATABASE_URL,
+};
 
 // The code imports dotenv and path to manage environment variables.
 // It uses dotenv.config() to load a .env file located in the current working directory.
