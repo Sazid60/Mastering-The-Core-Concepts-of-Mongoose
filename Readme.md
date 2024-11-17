@@ -239,8 +239,18 @@ export default app
 
 7. Run command : npm run lint
 8. Run Command to Fix Error : npm run lint:fix
-9. Add .eslintignore file in the root 
-  ```js
-  node_modules
-  dist
-  ```
+9. Setting up more rules in eslint.config.mjs
+```js
+{
+    ignores: ["node_modules", "dist"], // Directories to be ignored by the linter.
+    rules: {
+        "no-unused-vars": "error",         // Disallow variables that are declared but never used.
+        "no-unused-expressions" : "error", // Disallow standalone expressions that do nothing.
+        "prefer-const" : "error",         // Prefer `const` over `let` for variables that are not reassigned.
+        "no-console" : "warn",         // Warn when `console` statements are used (e.g., console.log).
+        "no-undef" : "error" //if anything is not used show error
+    },
+}
+```
+10. Run command to find error: npm run lint
+11. Run Command to fix error: npm run lint:fix
