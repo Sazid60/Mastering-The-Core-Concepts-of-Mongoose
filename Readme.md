@@ -626,7 +626,7 @@ const studentSchema = new Schema<Student>({
 // create a model
 // structure
 // const User = model<IUser>('User', userSchema);
-const Student = model<Student>('Student', studentSchema);
+const StudentModel = model<Student>('Student', studentSchema);
 ```
 
 ## 8-8 Create route , service and controller
@@ -691,4 +691,95 @@ const createStudentIntoDB = async (student: Student) => {
 export const StudentServices = {
   createStudentIntoDB,
 };
+```
+
+## 8-9 Insert a student data into mongoDB
+
+- we have to app.ts e pathai dite hobe
+
+```ts
+import express from 'express';
+import { StudentController } from './student.controller';
+
+const router = express.Router();
+
+// This will take the router request from client and hit the controller
+router.post('/create-student', StudentController.createStudent);
+
+export const StudentRoutes = router;
+```
+
+```ts
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
+import { StudentRoutes } from './app/modules/student/student.route';
+const app: Application = express();
+
+// Parser
+app.use(express.json());
+app.use(cors());
+
+// application routes
+// /api/v1/student/create-student e hit korle aj kore dibe
+app.use('/api/v1/students', StudentRoutes);
+
+app.get('/', (req: Request, res: Response) => {
+  const a = 10;
+  res.send(a);
+});
+
+export default app;
+```
+
+#### Now time to use postman
+
+- http://localhost:5000/api/v1/students/create-student hit post method
+- npm run start:dev write in in cmd
+- Change this line in controller since we are sending data in student object.
+
+```ts
+const student = req.body.student;
+// or we ca use destructuring
+const { student: studentData } = req.body;
+const result = await studentServices.createStudentIntoDB(studentData);
+```
+
+- click body->raw->json then insert a fake data
+
+```js
+{
+    "student" : {
+  "id": "S12345",
+  "name": {
+    "firstName": "John",
+    "middleName": "Michael",
+    "lastName": "Doe"
+  },
+  "gender": "male",
+  "dateOfBirth": "2002-05-14",
+  "email": "john.doe@example.com",
+  "contactNo": "+1234567890",
+  "emergencyContactNo": "+0987654321",
+  "bloodGroup": "O+",
+  "presentAddress": "123 Elm Street, Springfield",
+  "permanentAddress": "456 Oak Avenue, Springfield",
+  "guardian": {
+    "fatherName": "Robert Doe",
+    "fatherOccupation": "Engineer",
+    "fatherContactNo": "+1122334455",
+    "motherName": "Mary Doe",
+    "motherOccupation": "Teacher",
+    "motherContactNo": "+2233445566"
+  },
+  "localGuardian": {
+    "name": "Uncle Ben",
+    "occupation": "Businessman",
+    "contactNo": "+6677889900",
+    "address": "789 Maple Drive, Springfield"
+  },
+  "profileImg": "https://example.com/profile/johndoe.jpg",
+  "isActive": "active"
+}
+
+}
 ```

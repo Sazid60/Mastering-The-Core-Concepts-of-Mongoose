@@ -3,5 +3,7 @@ import { StudentController } from './student.controller';
 
 const router = express.Router();
 
-// this will call controller func
+// This will take the router request from client and hit the controller
 router.post('/create-student', StudentController.createStudent);
+
+export const StudentRoutes = router;
