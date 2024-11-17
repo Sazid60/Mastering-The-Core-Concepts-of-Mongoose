@@ -315,3 +315,67 @@ npm install --save-dev eslint-config-prettier
     "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     ```
 14. add NODE_ENV=development in .env. when its in production we will rename
+
+## 8-5 Software design pattern , mvc vs modular, create an interface
+
+- There are two types of design patter in express.js
+  1. MCV :consist of model, view, controller and routes. previously we had to use another folder named interface. Express diye server side rendering somoy html toiri kkorar jonne template engine lage view hisebe. There are some problem and barely used now.
+  2. Modular : recently used. Each features are converted into each modules. Lie all the student routes are coupled in student module, admin routes are coupled inside admin module
+
+#### benefits of using Modular patter
+
+- Scalability
+- Maintainability
+- Better Refactoring
+- Efficient Development
+
+#### Rules/Principles
+
+1. DRY- Do not Repeat Yourself
+2. Fat Model/Thin Controller
+
+#### Structure or work flow
+
+<!-- Using js -->
+
+- Schema->Model->DB Query
+
+<!-- Using Ts -->
+
+- Interface->Schema->Model->DB Query
+
+- Create a module folder src->app->modules->student->student.interface.ts
+-
+
+```ts
+import { Schema, model, connect } from 'mongoose';
+
+// 1. Create an interface representing a document in MongoDB.
+
+export type Guardian = {
+  fatherName: string;
+  fatherOccupation: string;
+  fatherContactNo: string;
+  motherName: string;
+  motherOccupation: string;
+  motherContactNo: string;
+};
+
+export type Student = {
+  id: string;
+  name: {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+  };
+  gender: 'male' | 'female';
+  dateOfBirth: string;
+  email: string;
+  contactNo: string;
+  emergencyContactNo: string;
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+  presentAddress: string;
+  permanentAddress: string;
+  guardian: Guardian;
+};
+```
