@@ -344,8 +344,47 @@ npm install --save-dev eslint-config-prettier
 
 - Interface->Schema->Model->DB Query
 
+#### Structure
+
+```ts
+import { Schema, model, connect } from 'mongoose';
+
+// 1. Create an interface representing a document in MongoDB.
+interface IUser {
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+// 2. Create a Schema corresponding to the document interface.
+const userSchema = new Schema<IUser>({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  avatar: String,
+});
+
+// 3. Create a Model.
+const User = model<IUser>('User', userSchema);
+
+run().catch((err) => console.log(err));
+
+async function run() {
+  // 4. Connect to MongoDB
+  await connect('mongodb://127.0.0.1:27017/test');
+
+  const user = new User({
+    name: 'Bill',
+    email: 'bill@initech.com',
+    avatar: 'https://i.imgur.com/dM7Thhn.png',
+  });
+  await user.save();
+
+  console.log(user.email); // 'bill@initech.com'
+}
+```
+
 - Create a module folder src->app->modules->student->student.interface.ts
--
+  [Mongoose with Typescript Docs](https://mongoosejs.com/docs/typescript.html)
 
 ```ts
 import { Schema, model, connect } from 'mongoose';
@@ -361,13 +400,21 @@ export type Guardian = {
   motherContactNo: string;
 };
 
+export type UserName = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+};
+
+export type LocalGuardian = {
+  name: string;
+  occupation: string;
+  contactNo: string;
+  address: string;
+};
 export type Student = {
   id: string;
-  name: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-  };
+  name: UserName;
   gender: 'male' | 'female';
   dateOfBirth: string;
   email: string;
@@ -377,5 +424,110 @@ export type Student = {
   presentAddress: string;
   permanentAddress: string;
   guardian: Guardian;
+  localGuardian: LocalGuardian;
+  profileImg?: string;
+  isActive: 'active' | 'blocked';
 };
+```
+
+## 8-6 Create an schema for a student
+
+- Schema returns a class as like oop. we can create a instance using the class.
+- Data will be checked or validated through mongoose. If its not valid it will not allow to keep in database
+- These schema types will be followed [Mongoose Schema Types](https://mongoosejs.com/docs/schematypes.html)
+- The following are all the valid SchemaTypes in Mongoose. Mongoose plugins can also add custom SchemaTypes like int32. Check out Mongoose's plugins search to find plugins.
+- String
+- Number
+- Date
+- Buffer
+- Boolean
+- Mixed
+- ObjectId
+- Array
+- Decimal128
+- Map
+- Schema
+- UUID
+- BigInt
+
+- src->app->modules->student->student.schema.ts
+
+```ts
+import { Schema, model, connect } from 'mongoose';
+import { Student } from './student.interface';
+
+const studentSchema = new Schema<Student>({
+  id: { type: String },
+  name: {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    middleName: {
+      type: String,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+  },
+  //   this is called enum
+  gender: ['male', 'female'],
+  dateOfBirth: { type: String },
+  email: { type: String, required: true },
+  contactNo: { type: String, required: true },
+  emergencyContactNo: { type: String, required: true },
+  bloodGroup: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+  presentAddress: { type: String, required: true },
+  permanentAddress: { type: String, required: true },
+  guardian: {
+    fatherName: {
+      type: String,
+      required: true,
+    },
+    fatherOccupation: {
+      type: String,
+      required: true,
+    },
+    fatherContactNo: {
+      type: String,
+      required: true,
+    },
+    motherName: {
+      type: String,
+      required: true,
+    },
+    motherOccupation: {
+      type: String,
+      required: true,
+    },
+    motherContactNo: {
+      type: String,
+      required: true,
+    },
+  },
+  localGuardian: {
+    name: {
+      type: String,
+      required: true,
+    },
+    occupation: {
+      type: String,
+      required: true,
+    },
+    contactNo: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+  },
+  profileImg: {
+    type: String,
+    required: true,
+  },
+  isActive: ['active', 'blocked'],
+});
 ```
