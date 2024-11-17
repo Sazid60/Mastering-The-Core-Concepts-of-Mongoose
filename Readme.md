@@ -628,3 +628,29 @@ const studentSchema = new Schema<Student>({
 // const User = model<IUser>('User', userSchema);
 const Student = model<Student>('Student', studentSchema);
 ```
+
+## 8-8 Create route , service and controller
+
+- We need route, controller, service as well. since client will hit route and then route will hit controller function and then controller function will services. and lastly service will handle business logic. This means service will query and get data and provide to the controller and then controller will give the data to client.
+
+- Flow diagram
+
+flowchart LR
+Client[Client] -->|req| Route[route.ts]
+Route -->|req| Controller[controller.ts]
+Controller -->|req| Service[service.ts]
+Service -->|req/res| Database[(Database)]
+Service -->|res| Controller
+Controller -->|res| Route
+Route -->|res| Client
+
+    %% Tools section
+    subgraph Tools
+        Angular[Angular] --> Client
+        React[React] --> Client
+        Vue[Vue.js] --> Client
+        Postman[Postman] --> Client
+    end
+
+    %% Response Object (success, message, data)
+    Note[{"success", "message", "data"}] --> Client
