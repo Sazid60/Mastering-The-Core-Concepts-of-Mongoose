@@ -243,7 +243,7 @@ export default app;
     "lint:fix": "eslint src/**/*.ts --fix"
    ```
 
-   ![alt text](image-3.png)
+![alt text](image-3.png)
 
 7. Run command : npm run lint
 8. Run Command to Fix Error : npm run lint:fix
@@ -387,8 +387,6 @@ async function run() {
   [Mongoose with Typescript Docs](https://mongoosejs.com/docs/typescript.html)
 
 ```ts
-import { Schema, model, connect } from 'mongoose';
-
 // 1. Create an interface representing a document in MongoDB.
 
 export type Guardian = {
@@ -530,4 +528,103 @@ const studentSchema = new Schema<Student>({
   },
   isActive: ['active', 'blocked'],
 });
+```
+
+## 8-7 Refactor your schema and creating a Model
+
+```ts
+import { Schema, model } from 'mongoose';
+import {
+  Guardian,
+  LocalGuardian,
+  Student,
+  UserName,
+} from './student.interface';
+
+// sub schema
+const userNameSchema = new Schema<UserName>({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  middleName: {
+    type: String,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+});
+
+const guardianSchema = new Schema<Guardian>({
+  fatherName: {
+    type: String,
+    required: true,
+  },
+  fatherOccupation: {
+    type: String,
+    required: true,
+  },
+  fatherContactNo: {
+    type: String,
+    required: true,
+  },
+  motherName: {
+    type: String,
+    required: true,
+  },
+  motherOccupation: {
+    type: String,
+    required: true,
+  },
+  motherContactNo: {
+    type: String,
+    required: true,
+  },
+});
+const localGuardian = new Schema<LocalGuardian>({
+  name: {
+    type: String,
+    required: true,
+  },
+  occupation: {
+    type: String,
+    required: true,
+  },
+  contactNo: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+});
+
+// Main Schema
+const studentSchema = new Schema<Student>({
+  id: { type: String },
+  name: userNameSchema,
+  //   this is called enum
+  gender: ['male', 'female'],
+  dateOfBirth: { type: String },
+  email: { type: String, required: true },
+  contactNo: { type: String, required: true },
+  emergencyContactNo: { type: String, required: true },
+  bloodGroup: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+  presentAddress: { type: String, required: true },
+  permanentAddress: { type: String, required: true },
+  guardian: guardianSchema,
+  localGuardian: localGuardian,
+  profileImg: {
+    type: String,
+    required: true,
+  },
+  isActive: ['active', 'blocked'],
+});
+
+// create a model
+// structure
+// const User = model<IUser>('User', userSchema);
+const Student = model<Student>('Student', studentSchema);
 ```
