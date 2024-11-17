@@ -631,26 +631,64 @@ const Student = model<Student>('Student', studentSchema);
 
 ## 8-8 Create route , service and controller
 
-- We need route, controller, service as well. since client will hit route and then route will hit controller function and then controller function will services. and lastly service will handle business logic. This means service will query and get data and provide to the controller and then controller will give the data to client.
+- We need route, controller, service as well. since client will hit route and then route will hit controller function and then controller function will services. and lastly service will handle business logic. This means service will query on model and get data and provide to the controller and then controller will give the data to client.
 
 - Flow diagram
+  ![alt text](<WhatsApp Image 2024-11-17 at 20.50.29_08d6dced.jpg>)
 
-flowchart LR
-Client[Client] -->|req| Route[route.ts]
-Route -->|req| Controller[controller.ts]
-Controller -->|req| Service[service.ts]
-Service -->|req/res| Database[(Database)]
-Service -->|res| Controller
-Controller -->|res| Route
-Route -->|res| Client
+#### student.route.ts
 
-    %% Tools section
-    subgraph Tools
-        Angular[Angular] --> Client
-        React[React] --> Client
-        Vue[Vue.js] --> Client
-        Postman[Postman] --> Client
-    end
+```ts
+import express from 'express';
+import { StudentController } from './student.controller';
 
-    %% Response Object (success, message, data)
-    Note[{"success", "message", "data"}] --> Client
+const router = express.Router();
+
+// this will call controller func
+router.post('/create-student', StudentController.createStudent);
+```
+
+#### student.controller.ts
+
+```ts
+import { Request, Response } from 'express';
+import { StudentServices } from './student.service';
+
+const createStudent = async (req: Request, res: Response) => {
+  try {
+    const student = req.body;
+
+    // will call service function to send this data
+    const result = await StudentServices.createStudentIntoDB(student);
+
+    // send response
+    res.status(200).json({
+      success: true,
+      message: 'Student Is Created Successfully',
+      data: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const StudentController = {
+  createStudent,
+};
+```
+
+#### student.services.ts
+
+```ts
+import { Student } from './student.interface';
+import { StudentModel } from './student.model';
+
+const createStudentIntoDB = async (student: Student) => {
+  const result = await StudentModel.create(student);
+  return result;
+};
+
+export const StudentServices = {
+  createStudentIntoDB,
+};
+```
