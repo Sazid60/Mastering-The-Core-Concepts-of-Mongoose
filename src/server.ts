@@ -1,13 +1,18 @@
 import app from "./app";
-
-const mongoose = require('mongoose');
+import config from "./app/config";
+import mongoose from "mongoose";
 
 async function main() {
-    await mongoose.connect(process.env.DATABASE_URL);
-  
+
+  try {
+    await mongoose.connect(config.database_url as string);
+
+    app.listen(config.port, () => {
+      console.log(`Example app listening on port ${config.port}`)
+    })
+  } catch (err) {
+    console.log(err);
   }
+}
 
 
-app.listen(process.env.PORT, () => {
-    console.log(`Example app listening on port ${process.env.PORT}`)
-  })

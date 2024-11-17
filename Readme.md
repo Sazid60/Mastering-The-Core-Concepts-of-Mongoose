@@ -62,6 +62,7 @@ To apply the concepts learned, you will create a schema for a student, defining 
 - we will keep all connections in server.ts
 - Install node typing library npm i -D @types/node
 - Install express typing library npm i -D @types/express
+- npm i --save-dev @types/cors
 - Create .env file in the root and 
   ```js
   PORT = 5000
@@ -118,3 +119,128 @@ dotenv.config({ path: path.join(process.cwd(), '.env') });
 ```
 - This setup is useful in scenarios where sensitive configuration data (e.g., API keys, database credentials, or server configurations) is stored in a .env file to keep it out of the source code and version control.
 
+#### Explanation of dotenv.config({ path: path.join((process.cwd(), '.env')) }):
+- This line configures the dotenv library to load environment variables from a specific .env file. Here's what each part does:
+
+- dotenv.config({ path: ... }):
+
+dotenv.config() initializes the dotenv library, making variables in the .env file accessible via process.env.
+path.join(process.cwd(), '.env'):
+
+- process.cwd(): Gets the current working directory of the Node.js process.
+- path.join(): Constructs the full path to the .env file by combining the current working directory with the file name .env.
+- Purpose: This line ensures that dotenv loads environment variables from a .env file located in the root of the project's working directory. This is a common practice for managing configuration settings in a Node.js application.
+  
+ন্ডাস্ট্রি তে এখনো .eslintrc.json এবং .eslintignore এই প্যাটার্ন ব্যবহার হতেই দেখা যায়, তবে .eslint.config.mjs তুলনামূলক নতুন যা সামনে ইন্ডাস্ট্রিতে এডাপ্ট হতে পারে এবং আপনারাচাইলে ইনডিভিজুয়াল প্রজেক্ট এর জন্য সেটাপ করতে পারেন, সেজন্য এই রিলেটেড ব্লগ এবং ভিডিও দেয়া হল।
+
+
+ব্লগঃ
+ [Blog Link](https://dev.to/shafayat/-express-typescript-eslint-prettiersetup-5fhg)
+
+ ## 8-3 Installing eslint, refactor code, fix errors using command
+- index.ts
+```ts
+import dotenv from 'dotenv'
+import path from 'path'
+
+// connecting with .env
+// Configure dotenv to load .env file
+dotenv.config({ path: path.join((process.cwd(), '.env')) })
+
+export default {
+    port: process.env.PORT,
+    database_url: process.env.DATABASE_URL
+}
+
+```
+
+- The code imports dotenv and path to manage environment variables.
+- It uses dotenv.config() to load a .env file located in the current working directory.
+- It exports an object containing port and database_url, which are retrieved from the .env file.
+- This setup is used to configure a Node.js application dynamically with environment-specific variables.
+
+- server.ts
+```ts
+import app from "./app";
+import config from "./app/config";
+import mongoose from "mongoose";
+
+async function main() {
+
+  try {
+    await mongoose.connect(config.database_url as string);
+
+    app.listen(config.port, () => {
+      console.log(`Example app listening on port ${config.port}`)
+    })
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+```
+- app.ts
+```ts
+import express, {Application, Request, Response} from 'express';
+import cors from 'cors'
+const app : Application = express()
+
+// Parser
+app.use(express.json()) 
+app.use(cors())
+
+
+app.get('/', (req :Request, res:Response) => {
+  res.send('Hello World!')
+})
+
+export default app
+
+```
+
+#### Eslint Installation
+- Eslint helps to forma codes, find error, code quality check
+- Prettier helps tto format code
+
+[Installation Guide](https://blog.logrocket.com/linting-typescript-eslint-prettier) This is old one
+
+- add these on top of tsconfig.json
+
+```js
+ "include": ["src"], // which files to compile
+  "exclude": ["node_modules"], // which files to skip
+```
+- Strictly follow this documentation [Express-Typescript-eslint-prettier_setup](https://dev.to/shafayat/-express-typescript-eslint-prettiersetup-5fhg)
+
+1. run this command : npm i -D eslint@9.14.0 @eslint/js @types/eslint__js typescript typescript-eslint
+2. Run this command : npx eslint --init
+   ![alt text](image-1.png)
+3. To remove upgraded version run command: npm remove eslint
+4. Run command tto add specific version : npm i -D eslint@9.14.0
+5. Add he rules inside the eslint.config.mjs
+  ```js
+  {
+    ignores: ["node_modules", "dist"],
+    rules: {
+      "no-unused-vars": "error",
+    },
+  },
+  ```
+
+  ![alt text](image-2.png)
+
+6. Add these scripts inside package.json
+   ```js
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+   ```
+
+   ![alt text](image-3.png)
+
+7. Run command : npm run lint
+8. Run Command to Fix Error : npm run lint:fix
+9. Add .eslintignore file in the root 
+  ```js
+  node_modules
+  dist
+  ```
