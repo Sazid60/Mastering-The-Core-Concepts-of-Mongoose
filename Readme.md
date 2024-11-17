@@ -312,6 +312,6 @@ npm install --save-dev eslint-config-prettier
 13. Add the scripts to work more organized for production and development mode
     ```js
     "start:prod":"node ./dist/server.js",
-    "start:dev": "ts-node-dev --respawn --transpile-only src/server.js",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     ```
 14. add NODE_ENV=development in .env. when its in production we will rename
